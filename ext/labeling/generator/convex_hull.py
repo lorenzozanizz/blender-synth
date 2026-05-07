@@ -171,4 +171,3 @@ class PolygonExtractor(Extractor):
     def get_bbox_entities(self) -> Dict:
         """ Get the mappings from object to bounding boxes """
         return self.visible_entities
-

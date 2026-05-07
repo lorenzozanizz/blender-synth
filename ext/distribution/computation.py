@@ -24,7 +24,9 @@ wsk = WidgetSerializationKeys
 # Use a common sampling raw distribution for all kinds of entries, in this way
 # we can apply the seed to this single RNG and obtain reproducibility.
 class Distribution(Enum):
-    """
+    """ An enum for the supported distributions, all these distributions are available
+    in the simple distribution editor and can be customized with parameters which
+    are taken from the mathematical definition of the distribution.
 
     """
 
@@ -119,8 +121,12 @@ class ConstantSampler(CompiledSampler):
         return [self._value]
 
 class PresetSampler(CompiledSampler):
-    """
+    """ The main class for the compilation and utilization of preset distributions,
+    encompassing sampling and randomization logic by assigning to distributions a mathematical
+     implementation.
 
+    The class represents a CompiledSampler which allows to sample from a default distribution,
+     which can be concatenated and alternated in a node-like fashion
     """
 
     @staticmethod

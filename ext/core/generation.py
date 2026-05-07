@@ -121,6 +121,12 @@ class Executor:
         return {'FINISHED'}
 
     def _get_strategy(self, label_params: LabelExtractionConfig) -> IOStrategy:
+        """ Generates the IOStrategy for the labeling and file writing process using the
+        LabelExtractionConfig and (TBI) add-on preferences to control the image writing settings.
+
+        :param label_params: LabelExtractionConfig object
+        :return: the correct IOStrategy for said format
+        """
         lbl_type = label_params.format
         strat = LabelingFormatRegistry.get_strategy(lbl_type)
         if strat is None:

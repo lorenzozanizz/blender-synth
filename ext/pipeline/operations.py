@@ -174,31 +174,59 @@ class RandomizeScaleOperation(NumericRandomOperation):
 @OperationRegistry.register(PipeNames.INTENSITY.value)
 class RandomizeIntensityOperation(PipelineOperation):
 
+    def __init__(self):
+
+        self.distribution = None
+        self.node = None
+        self.offset_mode = None
+
     def compile(self, context, config: dict):
         # Note: the value is assumed to be scalar!... for now
         # The distribution will be compiled (either a node or a preset distribution)
         self.distribution = SamplerCompiler.compile(config[wsk.NODE_DISTRIBUTION.value], dim=1)
-        self.targets = config[wsk.OBJECT.value][wsk.OBJECT_NAMES.value]
+        node_label = config[wsk.VALUE.value][wsk.VALUE_LABEL.value]
+        material = config[wsk.VALUE.value][wsk.VALUE_MATERIAL.value]
+        # Already extract the target node.
+        material = bpy.data.materials.get(material)
+        nodes = material.node_tree.nodes
+        self.node = next(node for node in nodes if node.label == node_label)
+
         # This is a boolean value
         self.offset_mode = config[wsk.OFFSET.value][wsk.OFFSET_MODE.value]
 
     def execute(self, context):
-        pass
 
+        # Extract a value, then find the target node and change its value.
+        value = self.distribution.sample()[0]
+        self.node.outputs[0].data.value = value
 
     class PropertyValueContext:
 
+        def __init__(self, node):
+            self.node = node
+            self.prev_val = None
+
         def __enter__(self):
-            pass
+            """ Enter the node value context manger """
+            self.prev_val = self.node.outputs[0].default_value
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            pass
+            """ Exit the node value context manger """
+            self.node.outputs[0].default_value = self.prev_val
 
     def get_global_context(self):
-        pass
+        """ Get the global context for the property value, which is entrusted with
+        the job of restoring the context of the value for the selected node
+        :return: a Context object.
+        """
+        return RandomizeIntensityOperation.PropertyValueContext(self.node)
 
     def get_frame_context(self):
-        pass
+        """
+
+        :return:
+        """
+        return RandomizeIntensityOperation.PropertyValueContext(self.node)
 
 
 @OperationRegistry.register(PipeNames.POSITION.value)
@@ -376,24 +404,10 @@ class RandomizeVisibilityOperation(PipelineOperation):
                 obj.visible_shadow, obj.visible_transmission, obj.visible_volume_scatter, obj.hide_get()
             )
 
-@OperationRegistry.register(PipeNames.LINE.value)
-class MoveLineOperation(PipelineOperation):
-
-    def compile(self, context, config: dict):
-        pass
-
-    def execute(self, context):
-        pass
-
-    def get_frame_context(self):
-        pass
-
-    def get_global_context(self):
-        pass
-
 
 @OperationRegistry.register(PipeNames.FOCAL_LEN.value)
 class FocalLengthOperation(PipelineOperation):
+
     def compile(self, context, config: dict):
         pass
 
