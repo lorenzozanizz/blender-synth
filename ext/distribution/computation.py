@@ -8,7 +8,7 @@ extraction of data can happen without interrogating the bpy data component every
 from .nodes import NodeDistributionSerializer
 from ..constants import WidgetSerializationKeys, DISTRO_EDITOR_NAME
 from ..utils.logger import UniqueLogger
-from ..utils.math_funcs import geometric
+from ..utils.math_funcs import geometric, pick_k_from_n
 
 from enum import Enum
 from math import pi, sqrt, cos, sin
@@ -39,6 +39,7 @@ class Distribution(Enum):
     GAUSSIAN                        = "Gaussian"
     CATEGORICAL_UNIFORM             = "Categorical Uniform"
 
+    UNIFORM_K_OUT_OF_N              = "Uniform K out of N"
     UNIFORM_SPHERE                  = "Uniform Sphere"
     MULTIVARIATE_UNIFORM            = "Multivariate Uniform"
     MULTIVARIATE_GAUSSIAN           = "Multivariate Gaussian"
@@ -131,6 +132,12 @@ class PresetSampler(CompiledSampler):
     """
 
     @staticmethod
+    def _sample_k_out_of_n(params: dict, dim: int):
+        n = params['n']
+        k = params['k']
+        return [ pick_k_from_n(n, k) for _ in range(dim)]
+
+    @staticmethod
     def _sample_categorical_uniform(params: Dict[str, Any], dim: int ):
         """
 
@@ -207,6 +214,7 @@ class PresetSampler(CompiledSampler):
             d.GEOMETRIC:                        PresetSampler._sample_geometric,
             d.BINOMIAL:                         PresetSampler._sample_binomial,
             d.GAUSSIAN:                         PresetSampler._sample_gaussian,
+            d.UNIFORM_K_OUT_OF_N:                       PresetSampler._sample_k_out_of_n,
             d.CATEGORICAL_UNIFORM:              PresetSampler._sample_categorical_uniform,
             d.MULTIVARIATE_UNIFORM:             PresetSampler._sample_multivariate_uniform,
             d.MULTIVARIATE_GAUSSIAN:            PresetSampler._sample_multivariate_gaussian,

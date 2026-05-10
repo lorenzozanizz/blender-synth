@@ -449,6 +449,42 @@ class SimpleMaterialPropertyOperation(PipelineOperation):
     def get_frame_context(self):
         return SimpleMaterialPropertyOperation.SimplePropertyContext(self.node, self.get_prop, self.set_prop)
 
+@OperationRegistry.register(PipeNames.SELECT.value)
+class SelectOperation(PipelineOperation):
+
+    def get_global_context(self):
+        return RandomizeVisibilityOperation.VisibilityContext(self.targets)
+
+    def get_frame_context(self):
+        return RandomizeVisibilityOperation.VisibilityContext(self.targets)
+
+    def compile(self, context, config: dict):
+        self.targets = config[wsk.OBJECT.value][wsk.OBJECT_NAMES.value]
+        # UNIFORM_K_OUT_OF_N
+        self.k = config[wsk.SELECT.value][wsk.SELECT_K.value]
+        UniqueLogger.quick_log(f"N and K {self.k} {len(self.targets)}")
+        self.distribution = SamplerCompiler.make_distribution(
+            Distribution.UNIFORM_K_OUT_OF_N.name, 1, k=self.k, n=len(self.targets))
+
+    def __init__(self):
+
+        self.distribution = None
+        self.targets = None
+        self.k = None
+
+    def execute(self, context):
+        # One dimensional result, a bernoulli
+        l = len(self.targets)
+        if self.k >= l:
+            return
+        result = self.distribution.sample()[0]
+        for res in result:
+            if res < 0 or res >= l:
+                continue
+            obj = bpy.data.objects[self.targets[res]]
+            RandomizeVisibilityOperation.hide(obj)
+
+
 
 class RoughnessMaterialPropertyOperation(SimpleMaterialPropertyOperation):
 

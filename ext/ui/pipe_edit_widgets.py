@@ -808,6 +808,10 @@ class ValueTargeter(EditorWidget):
             wsk.VALUE_LABEL.value: scene.targeted_node.node_label,
         }
 
+class DescriptionWidget:
+
+    pass
+
 
 class ConditionalWidget(EditorWidget):
 

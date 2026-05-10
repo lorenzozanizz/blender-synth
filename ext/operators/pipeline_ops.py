@@ -191,43 +191,58 @@ class TypedSingleObjectTargeter(Operator):
         return { 'FINISHED' }
 
 def get_selected_node_and_material(
-        reporter, context, node_name: Optional[str] = None, node_type: Optional[str] = None
+        reporter, context, node_name: Optional[str] = None, node_type: Optional[str] = None,
+        has_attributes: tuple[str] = None
     ) -> tuple:
     """
 
+    :param node_type:
     :param reporter:
     :param context:
     :param node_name:
+    :param has_attributes:
     :return:
     """
 
     # Get active editor area
     for area in context.screen.areas:
-        if area.type == 'NODE_EDITOR':
-            # Get the node tree
-            space = area.spaces.active
-            node_tree = space.node_tree
-            if node_tree:
-                mat_name = "Unknown Material"
-                if hasattr(space, "id") and space.id:
-                    mat_name = space.id.name
+        if area.type != 'NODE_EDITOR':
+            continue
+        # Get the node tree
+        space = area.spaces.active
+        node_tree = space.node_tree
+        if not node_tree:
+            continue
+        mat_name = "Unknown Material"
+        if hasattr(space, "id") and space.id:
+            mat_name = space.id.name
 
-                # Find selected nodes
-                for node in node_tree.nodes:
-                    if not node.select:
-                        continue
-                    # If the node_name value is set, check if the node matches
-                    if node_name is not None and node_name in node.bl_idname:
-                        return None, None
-                    # If the node_name value is set, check if the node matches
-                    if node_type is not None and node_type in node.type:
-                        return None, None
-                    # At this point the node is selected and is of the correct node type.
-                    if not node.label or node.bl_label.strip() == "":
-                        reporter.report({'WARNING'}, f"Node must have a label to ensure safety!")
-                        return None, None
-                    else:
-                        return node, mat_name
+        # Find selected nodes
+        for node in node_tree.nodes:
+            if not node.select:
+                continue
+            # If the node_name value is set, check if the node matches
+            if node_name is not None and node_name in node.bl_idname:
+                return None, None
+            # If the node_name value is set, check if the node matches
+            if node_type is not None and node_type in node.type:
+                return None, None
+            if has_attributes and node.attributes:
+                search_attributes = set(att.lowerr() for att in has_attributes)
+                for input_socket in node.inputs:
+                    # e.g. nodes
+                    if input_socket.name.lower() in search_attributes:
+                        search_attributes.remove(input_socket.name.lower())
+                if search_attributes:
+                    return None, None
+                else:
+                    return node, mat_name
+            # At this point the node is selected and is of the correct node type.
+            if not node.label or node.bl_label.strip() == "":
+                reporter.report({'WARNING'}, f"Node must have a label to ensure safety!")
+                return None, None
+            else:
+                return node, mat_name
     return None, None
 
 

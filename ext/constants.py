@@ -15,7 +15,7 @@ def panel_conflict_rename(name: str) -> str:
 
 # Names of the main panel and the category name
 MAIN_PANEL_NAME = "Generator"
-PANEL_CATEGORY  = "Synthetic"
+PANEL_CATEGORY  = "Gensynth"
 
 REPO_URL = "https://github.com/lorenzozanizz/gensynth"
 DOCU_URL = "https://github.com/lorenzozanizz/gensynth/docs"
@@ -40,17 +40,17 @@ class PipeNames(Enum):
 
     SCALE       = "Scale"
     ROTATION    = "Rotation"
-    MOVE        = "Move"            # (x)
+    MOVE        = "Move"
     POSITION    = "Position"
     VISIBILITY  = "Visibility"
-    LINE        = "Line"            # (x)
-    SELECT      = "Select"          # (x)
+    LINE        = "Line"
+    SELECT      = "Select"
     SPHERICAL   = "Sphere"          # (x)
 
     # Material
-    MATERIAL    = "Material"        # (x)
-    TEXTURE     = "Texture"         # (x)
-    INTENSITY   = "Intensity"       # (x)
+    MATERIAL    = "Material"
+    TEXTURE     = "Texture"
+    INTENSITY   = "Intensity"
     METALLIC    = "Metallic"        # (x)
     ROUGHNESS   = "Roughness"       # (x)
     NODE_PROP   = "Node Property"   # (x)
@@ -62,9 +62,9 @@ class PipeNames(Enum):
     COLOR       = "Color"           # (x)
 
     # Camera
-    BEZIER_LOCK = "Bezier Lock"     # (x)
-    SPHERE_LOCK = "Sphere Lock"     # (x)
-    FOCAL_LEN   = "Focal Length"    # (x)
+    BEZIER_LOCK = "Bezier Lock"
+    SPHERE_LOCK = "Sphere Lock"
+    FOCAL_LEN   = "Focal Length"
     JITTER      = "Camera Jitter"   # (x)
     POV         = "Change POVs"     # (x)
 
@@ -97,6 +97,9 @@ class WidgetSerializationKeys(Enum):
     BEZIER_NAME = "name"
 
     DIMENSION = "dimension"
+
+    SELECT = "select"
+    SELECT_K = "k"
 
     MATERIAL = "materials"
     MATERIAL_LIST               = "materials"

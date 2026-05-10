@@ -164,6 +164,16 @@ class RandomizeMaterialOperation(PipeDrawer):
         layout.separator()
         MaterialSelector.draw(layout, context)
 
+@OperationDrawerRegistry.register(PipeNames.SELECT.value)
+class RandomizeSelectOperation(PipeDrawer):
+
+    @staticmethod
+    def draw_editor(layout, context) -> None:
+        scene = context.scene
+        layout.prop(scene, 'k_out_of_n', text="Number of items (K)")
+        ObjectTargeter.draw(layout, context)
+
+
 @OperationDrawerRegistry.register(PipeNames.METALLIC.value)
 class RandomizeMetallicOperation(PipeDrawer):
 

@@ -190,6 +190,26 @@ class TextureSchema(PipeSchema):
             ImageTextureTargeter.setup_from_config(config["node"], context)
             PathListSelector.setup_from_config(config["textures"], context)
 
+@PipeSchemaRegistry.register(PipeNames.SELECT.value)
+class SelectSchema(PipeSchema):
+
+    @staticmethod
+    def extract_config_from_ui(context, operation) -> dict:
+        scene = context.scene
+        dic = {
+            wsk.SELECT.value: { wsk.SELECT_K.value : scene.k_out_of_n },
+            wsk.OBJECT.value: ObjectTargeter.extract_data(context),
+        }
+        return dic
+
+    @staticmethod
+    def apply_config_to_ui(context, operation, config) -> None:
+        if not config:
+            ObjectTargeter.reset(context)
+        else:
+            ObjectTargeter.setup_from_config(config["target"], context)
+
+
 @PipeSchemaRegistry.register(PipeNames.MATERIAL.value)
 class MaterialSchema(PipeSchema):
 

@@ -34,6 +34,7 @@ pipe_to_ico_mapping = {
     PipeNames.POSITION: "EMPTY_ARROWS",
     PipeNames.VISIBILITY: "MOD_OPACITY",
     PipeNames.MOVE: "EMPTY_AXIS",
+    PipeNames.SELECT: "GROUP_VERTEX",
 
     PipeNames.MATERIAL: "MATERIAL",
     PipeNames.TEXTURE: "NODE_TEXTURE",
@@ -307,7 +308,7 @@ class AddObjectCategoryPipeMenu(Menu):
         layout = self.layout
         for name in (
             PipeNames.ROTATION, PipeNames.MOVE, PipeNames.POSITION, PipeNames.SCALE, PipeNames.VISIBILITY,
-            PipeNames.LINE
+            PipeNames.LINE, PipeNames.SELECT
         ):
             layout.operator(Labels.ADD_PIPE.value, text=name.value,
                             icon=pipe_to_ico_mapping[name]).op_name = name.value

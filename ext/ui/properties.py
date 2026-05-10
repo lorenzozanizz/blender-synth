@@ -132,7 +132,11 @@ operation_properties = {
         name="Distribution",
         items= [(dist.name, dist.value.title(), "") for dist in UPPER_D_DISTRIBUTIONS]
     ),
-
+    "k_out_of_n": IntProperty(
+        name="Pick k-out-of-N",
+        default=1,
+        min=1
+    ),
     "targeted_objects_display": CollectionProperty(
         name="Targeted Objects",
         type=ObjectName

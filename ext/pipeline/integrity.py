@@ -144,6 +144,14 @@ class IntensityValidator(PipeValidator):
         dis_ok = NodeDistributionSelectorValidator.validate(partial_config=config[wsk.NODE.value])
         return val_ok and dis_ok
 
+@ValidatorRegistry.register(PipeNames.SELECT.value)
+class SelectValidator(PipeValidator):
+
+    @staticmethod
+    def validate(pipe: PipelineOperation, config: dict) -> bool:
+        obj_ok = ObjectTargeterValidator.validate(config[wsk.OBJECT.value])
+        return obj_ok
+
 class MaterialPropertyValidator(PipeValidator):
     @staticmethod
     def validate(pipe: PipelineOperation, config: dict) -> bool:
