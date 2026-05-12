@@ -449,42 +449,6 @@ class SimpleMaterialPropertyOperation(PipelineOperation):
     def get_frame_context(self):
         return SimpleMaterialPropertyOperation.SimplePropertyContext(self.node, self.get_prop, self.set_prop)
 
-@OperationRegistry.register(PipeNames.SELECT.value)
-class SelectOperation(PipelineOperation):
-
-    def get_global_context(self):
-        return RandomizeVisibilityOperation.VisibilityContext(self.targets)
-
-    def get_frame_context(self):
-        return RandomizeVisibilityOperation.VisibilityContext(self.targets)
-
-    def compile(self, context, config: dict):
-        self.targets = config[wsk.OBJECT.value][wsk.OBJECT_NAMES.value]
-        # UNIFORM_K_OUT_OF_N
-        self.k = config[wsk.SELECT.value][wsk.SELECT_K.value]
-        UniqueLogger.quick_log(f"N and K {self.k} {len(self.targets)}")
-        self.distribution = SamplerCompiler.make_distribution(
-            Distribution.UNIFORM_K_OUT_OF_N.name, 1, k=self.k, n=len(self.targets))
-
-    def __init__(self):
-
-        self.distribution = None
-        self.targets = None
-        self.k = None
-
-    def execute(self, context):
-        # One dimensional result, a bernoulli
-        l = len(self.targets)
-        if self.k >= l:
-            return
-        result = self.distribution.sample()[0]
-        for res in result:
-            if res < 0 or res >= l:
-                continue
-            obj = bpy.data.objects[self.targets[res]]
-            RandomizeVisibilityOperation.hide(obj)
-
-
 @OperationRegistry.register(PipeNames.ROUGHNESS.value)
 class RoughnessMaterialPropertyOperation(SimpleMaterialPropertyOperation):
 
@@ -526,6 +490,44 @@ class MetallicMaterialPropertyOperation(SimpleMaterialPropertyOperation):
             if inp.name.lower() == 'metallic':
                 return inp.default_value
         return 0
+
+
+@OperationRegistry.register(PipeNames.SELECT.value)
+class SelectOperation(PipelineOperation):
+
+    def get_global_context(self):
+        return RandomizeVisibilityOperation.VisibilityContext(self.targets)
+
+    def get_frame_context(self):
+        return RandomizeVisibilityOperation.VisibilityContext(self.targets)
+
+    def compile(self, context, config: dict):
+        self.targets = config[wsk.OBJECT.value][wsk.OBJECT_NAMES.value]
+        # UNIFORM_K_OUT_OF_N
+        self.k = config[wsk.SELECT.value][wsk.SELECT_K.value]
+        UniqueLogger.quick_log(f"N and K {self.k} {len(self.targets)}")
+        self.distribution = SamplerCompiler.make_distribution(
+            Distribution.UNIFORM_K_OUT_OF_N.name, 1, k=self.k, n=len(self.targets))
+
+    def __init__(self):
+
+        self.distribution = None
+        self.targets = None
+        self.k = None
+
+    def execute(self, context):
+        # One dimensional result, a bernoulli
+        l = len(self.targets)
+        if self.k >= l:
+            return
+        result = self.distribution.sample()[0]
+        for res in result:
+            if res < 0 or res >= l:
+                continue
+            obj = bpy.data.objects[self.targets[res]]
+            RandomizeVisibilityOperation.hide(obj)
+
+
 
 
 @OperationRegistry.register(PipeNames.MATERIAL.value)
@@ -849,3 +851,65 @@ class MoveAlongLineOperation(PipelineOperation):
     def get_frame_context(self):
         return RandomizePositionOperation.PositionContext(self.targets)
 
+
+class SimpleLightPropertyOperation(PipelineOperation):
+
+    def __init__(self):
+        self.distribution = None
+        self.target = None
+        self.offset_mode = None
+
+    def compile(self, context, config: dict):
+        self.distribution = SamplerCompiler.compile(config[wsk.NODE_DISTRIBUTION.value], dim=1)
+        target = config[wsk.TYPED_OBJ.value][wsk.TYPED_OBJ_NAME.value]
+        # Lights are NOT in data.objects, rather they are inside data.lights
+        self.target = bpy.data.lights.get(target)
+
+        # This is a boolean value
+        self.offset_mode = config[wsk.OFFSET.value][wsk.OFFSET_MODE.value]
+
+    def execute(self, context):
+        value = self.distribution.sample()[0]
+        self.set_prop(self.target, value, offset=self.offset_mode)
+
+    @abstractmethod
+    def set_prop(self, target: Any, value: Any, offset: bool) -> None:
+        pass
+
+    @abstractmethod
+    def get_prop(self, target: Any) -> Any:
+        pass
+
+    def get_global_context(self):
+        return SimpleMaterialPropertyOperation.SimplePropertyContext(self.target, self.get_prop, self.set_prop)
+
+    def get_frame_context(self):
+        return SimpleMaterialPropertyOperation.SimplePropertyContext(self.target, self.get_prop, self.set_prop)
+
+@OperationRegistry.register(PipeNames.POWER.value)
+class LightPowerPropertyOperation(SimpleLightPropertyOperation):
+
+    def set_prop(self, target: Any, value: Any, offset: bool) -> None:
+        if offset:
+            self.target.energy += value
+        else:
+            self.target.energy = value
+        return
+
+
+    def get_prop(self, target) -> Any:
+        return self.target.energy
+
+@OperationRegistry.register(PipeNames.TEMPERATURE.value)
+class LightTemperaturePropertyOperation(SimpleLightPropertyOperation):
+
+    def set_prop(self, target: Any, value: Any, offset: bool) -> None:
+        if offset:
+            self.target.temperature += value
+        else:
+            self.target.temperature = value
+        return
+
+
+    def get_prop(self, target) -> Any:
+        return self.target.temperature

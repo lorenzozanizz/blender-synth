@@ -281,8 +281,32 @@ class MetallicEditor(SimpleMaterialPropertyEditor):
     pass
 
 @OperationDrawerRegistry.register(PipeNames.BASE_COLOR.value)
-class ColorEditor:
+class ColorEditor(PipeDrawer):
 
     @staticmethod
     def draw_editor(layout, context) -> None:
         pass
+
+@OperationDrawerRegistry.register(PipeNames.COLOR.value)
+class LightColorEditor(PipeDrawer):
+    pass
+
+class SimpleLightAttributeEditor(PipeDrawer):
+
+    @staticmethod
+    def draw_editor(layout, context) -> None:
+        typed_selector = TypedObjectTargeter(obj_type="LIGHT")
+        typed_selector.draw(layout, context)
+        layout.separator()
+        OffsetMode.draw(layout, context)
+        layout.separator()
+        NodeDistributionSelector.draw(layout, context, dim=1)
+
+
+@OperationDrawerRegistry.register(PipeNames.TEMPERATURE.value)
+class LightTemperatureEditor(SimpleLightAttributeEditor):
+    pass
+
+@OperationDrawerRegistry.register(PipeNames.POWER.value)
+class LightPowerEditor(SimpleLightAttributeEditor):
+    pass

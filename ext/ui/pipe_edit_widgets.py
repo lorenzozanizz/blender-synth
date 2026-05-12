@@ -700,9 +700,27 @@ class SimplifiedDistributionSelector(EditorWidget):
             return []
         return SimplifiedDistributionSelector._distribution_map[dist_name]
 
+#
+class ColorDistributionSelector(EditorWidget):
+
+    @staticmethod
+    def draw(layout, context) -> None:
+        pass
+
+    @staticmethod
+    def extract_data(context) -> dict:
+        pass
+
+    @staticmethod
+    def setup_from_config(config: dict, context) -> None:
+        pass
+
+    @staticmethod
+    def reset(context) -> None:
+        pass
+
 
 #
-
 class PositionListSelector(EditorWidget):
 
     @staticmethod

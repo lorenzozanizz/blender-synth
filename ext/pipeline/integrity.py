@@ -217,6 +217,22 @@ class TextureValidator(PipeValidator):
         img_ok = PathListSelectorValidator.validate(partial_config=config[wsk.PATH.value])
         return nod_ok and img_ok
 
+class SimpleLightAttributeValidator(PipeValidator):
+
+    @staticmethod
+    def validate(pipe: PipelineOperation, config: dict) -> bool:
+        dis_ok = NodeDistributionSelectorValidator.validate(partial_config=config[wsk.NODE.value])
+        light_ok = TypedObjectValidator.validate(partial_config=config[wsk.TYPED_OBJ.value])
+        return dis_ok and light_ok
+
+@ValidatorRegistry.register(PipeNames.TEMPERATURE.value)
+class LightTemperatureEditor(SimpleLightAttributeValidator):
+    pass
+
+@ValidatorRegistry.register(PipeNames.POWER.value)
+class LightPowerEditor(SimpleLightAttributeValidator):
+    pass
+
 
 class WidgetValidator(metaclass=ABCMeta):
     """
@@ -446,6 +462,3 @@ class LabeledNodeValidator(WidgetValidator):
         if not found_node:
             return False
         return True
-
-
-

@@ -34,7 +34,7 @@ from typing import Union, List
 from abc import abstractmethod, ABCMeta
 from random import gauss, random, uniform, choices
 from colorsys import hsv_to_rgb
-
+from enum import Enum
 
 # Simple alias for an RGB tuple and RGBa tuple
 rgb_color = tuple[float, float, float]
@@ -131,3 +131,12 @@ class PresetColorSampler:
     def sample(self) -> List[float]:
         """ Sample a vector of shape (dimension,) """
         pass
+
+
+class ColorDistribution(Enum):
+    """ """
+    UNIFORM_COLOR   = "Uniform Color"
+    UNIFORM_HSV     = "Uniform HSV Color"
+    GAUSSIAN_RGB    = "Gaussian RGB Color"
+    PALETTE_SAMPLER = "Palette Sampler"
+

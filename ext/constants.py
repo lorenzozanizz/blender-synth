@@ -51,8 +51,8 @@ class PipeNames(Enum):
     MATERIAL    = "Material"
     TEXTURE     = "Texture"
     INTENSITY   = "Intensity"
-    METALLIC    = "Metallic"        # (x)
-    ROUGHNESS   = "Roughness"       # (x)
+    METALLIC    = "Metallic"
+    ROUGHNESS   = "Roughness"
     NODE_PROP   = "Node Property"   # (x)
     BASE_COLOR  = "Base Color"      # (x)
 
@@ -88,37 +88,37 @@ class WidgetSerializationKeys(Enum):
     """
 
     # Meta-name used for conditional widgets.
-    ENABLED = "enabled"
+    ENABLED                     = "enabled"         # ^ Parent name
 
-    TYPED_OBJ = "typed_obj"
-    TYPED_OBJ_NAME = "name"
+    TYPED_OBJ                   = "typed_obj"       # ^ Parent name
+    TYPED_OBJ_NAME              = "name"
 
-    BEZIER = "bezier"
-    BEZIER_NAME = "name"
+    BEZIER                      = "bezier"          # ^ Parent name
+    BEZIER_NAME                 = "name"
 
-    DIMENSION = "dimension"
+    DIMENSION                   = "dimension"       # ^ Parent name
 
-    SELECT = "select"
-    SELECT_K = "k"
+    SELECT                      = "select"          # ^ Parent name
+    SELECT_K                    = "k"
 
-    MATERIAL = "materials"
+    MATERIAL                    = "materials"       # ^ Parent name
     MATERIAL_LIST               = "materials"
 
     # Incomplete, a bit messy for now!
     PROPERTY = ""
 
-    SHADER_NODE    = "shader_node"
+    SHADER_NODE                 = "shader_node"     # ^ Parent name
     SHADER_MATERIAL             = "shader_mat"
     SHADER_LABEL                = "label"
 
-    VALUE   = "value"
+    VALUE                       = "value"           # ^ Parent name
     VALUE_MATERIAL              = "material"
     VALUE_LABEL                 = "label"
 
-    POSITION                    = "positions"   # Parent name
+    POSITION                    = "positions"       # Parent name
     POSITION_LIST               = "positions"
 
-    SIMPLE                      = "distribution" # ^ Parent name
+    SIMPLE                      = "distribution"    # ^ Parent name
     SIMPLE_PRESET_NAME          = "preset"
     SIMPLE_OFFSET_MODE          = "do_offset"
     SIMPLE_DISCRETIZE           = "do_discretize"
@@ -126,27 +126,27 @@ class WidgetSerializationKeys(Enum):
     SIMPLE_CLAMPING_EXTREMES    = "clamping_factors"
     SIMPLE_PARAMETERS           = "parameters"
 
-    NODE    = "distribution"
+    NODE                        = "distribution"    # ^ Parent name
     NODE_USE_TREE               = "use_tree"
     NODE_DISTRIBUTION           = "distribution"
 
-    PATH    = "textures"
+    PATH                        = "textures"        # ^ Parent name
     PATH_USE_FOLDER             = "use_folder"
     PATH_FILES                  = "files"
     PATH_FOLDER                 = "folder"
 
-    TEXTURE = "node"
+    TEXTURE                     = "node"            # ^ Parent name
     TEXTURE_MATERIAL            = "material"
     TEXTURE_LABEL               = "label"
 
-    OBJECT  = "target"
+    OBJECT                      = "target"          # ^ Parent name
     OBJECT_NAMES                = "names"
 
-    AXIS    = "axis"
+    AXIS                        = "axis"            # ^ Parent name
     AXIS_DIMS                   = "dims"
     AXIS_RANDOMIZE_PREFIX_X     = "randomize_x"
     AXIS_RANDOMIZE_PREFIX_Y     = "randomize_y"
     AXIS_RANDOMIZE_PREFIX_Z     = "randomize_z"
 
-    OFFSET  = "offset"
+    OFFSET                      = "offset"          # ^ Parent name
     OFFSET_MODE                 = "mode"

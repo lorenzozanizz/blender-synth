@@ -29,26 +29,30 @@ from bpy.props import StringProperty, EnumProperty
 # visuals.
 pipe_to_ico_mapping = {
 
-    PipeNames.SCALE: "CON_SIZELIKE",
-    PipeNames.ROTATION: "CON_ROTLIKE",
-    PipeNames.POSITION: "EMPTY_ARROWS",
-    PipeNames.VISIBILITY: "MOD_OPACITY",
-    PipeNames.MOVE: "EMPTY_AXIS",
-    PipeNames.SELECT: "GROUP_VERTEX",
+    PipeNames.SCALE:        "CON_SIZELIKE",
+    PipeNames.ROTATION:     "CON_ROTLIKE",
+    PipeNames.POSITION:     "EMPTY_ARROWS",
+    PipeNames.VISIBILITY:   "MOD_OPACITY",
+    PipeNames.MOVE:         "EMPTY_AXIS",
+    PipeNames.SELECT:       "GROUP_VERTEX",
 
-    PipeNames.MATERIAL: "MATERIAL",
-    PipeNames.TEXTURE: "NODE_TEXTURE",
-    PipeNames.ROUGHNESS: "VPAINT_HLT",
-    PipeNames.METALLIC: "TPAINT_HLT",
-    PipeNames.NODE_PROP: "CURSOR",
+    PipeNames.MATERIAL:     "MATERIAL",
+    PipeNames.TEXTURE:      "NODE_TEXTURE",
+    PipeNames.ROUGHNESS:    "VPAINT_HLT",
+    PipeNames.METALLIC:     "TPAINT_HLT",
+    PipeNames.NODE_PROP:    "CURSOR",
 
-    PipeNames.INTENSITY: "FORCE_TURBULENCE",
-    PipeNames.LINE: "IPO_BACK",
-    PipeNames.BASE_COLOR: "COLOR",
+    PipeNames.INTENSITY:    "FORCE_TURBULENCE",
+    PipeNames.LINE:         "IPO_BACK",
+    PipeNames.BASE_COLOR:   "COLOR",
 
-    PipeNames.FOCAL_LEN: "CAMERA_STEREO",
-    PipeNames.BEZIER_LOCK: "IPO_BACK",
-    PipeNames.SPHERE_LOCK: "MATSPHERE"
+    PipeNames.POWER:        "LIGHT_POINT",
+    PipeNames.COLOR:        "RESTRICT_COLOR_ON",
+    PipeNames.TEMPERATURE:  "LIGHT_SUN",
+
+    PipeNames.FOCAL_LEN:    "CAMERA_STEREO",
+    PipeNames.BEZIER_LOCK:  "IPO_BACK",
+    PipeNames.SPHERE_LOCK:  "MATSPHERE"
 
 }
 
@@ -280,8 +284,13 @@ class AddLightingCategoryPipeMenu(Menu):
 
     def draw(self, context):
         layout = self.layout
-        row = layout.row(align=True)
-        layout.label(text='Lighting')
+        layout.label(text='Lighting Operations')
+        layout = self.layout
+        for name in (
+            PipeNames.POWER, PipeNames.COLOR, PipeNames.TEMPERATURE
+        ):
+            layout.operator(Labels.ADD_PIPE.value, text=name.value,
+                            icon=pipe_to_ico_mapping[name]).op_name = name.value
 
 
 # Submenu for constraint operations
@@ -294,7 +303,7 @@ class AddConstraintCategoryPipeMenu(Menu):
     def draw(self, context):
         layout = self.layout
         row = layout.row(align=True)
-        layout.label(text='Constraints')
+        layout.label(text='Constraints Operations')
 
 
 # Submenu for object operations
@@ -306,6 +315,8 @@ class AddObjectCategoryPipeMenu(Menu):
 
     def draw(self, context):
         layout = self.layout
+        layout.label(text='Object Operations')
+
         for name in (
             PipeNames.ROTATION, PipeNames.MOVE, PipeNames.POSITION, PipeNames.SCALE, PipeNames.VISIBILITY,
             PipeNames.LINE, PipeNames.SELECT
@@ -322,6 +333,7 @@ class AddCameraCategoryPipeMenu(Menu):
 
     def draw(self, context):
         layout = self.layout
+        layout.label(text='Camera Operations')
 
         for name in (
             PipeNames.BEZIER_LOCK, PipeNames.SPHERE_LOCK, PipeNames.FOCAL_LEN, PipeNames.JITTER, PipeNames.DISTANCE,
@@ -339,6 +351,8 @@ class AddMaterialCategoryPipeMenu(Menu):
 
     def draw(self, context):
         layout = self.layout
+        layout.label(text='Material Operations')
+
         for name in (
             PipeNames.MATERIAL, PipeNames.TEXTURE, PipeNames.METALLIC, PipeNames.ROUGHNESS,
             PipeNames.INTENSITY, PipeNames.NODE_PROP, PipeNames.BASE_COLOR
