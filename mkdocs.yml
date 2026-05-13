@@ -36,3 +36,5 @@ nav:
     # ... more files coming
   - Examples:
     - Product Classification: examples/01_prod_classification.md
+    - Image Segmentation: examples/02_image_segmentation.md
+    - Pose Estimation: examples/03_pose_estimation.md
