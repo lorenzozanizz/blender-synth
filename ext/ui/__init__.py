@@ -5,8 +5,9 @@ from .pipeline_list_viewer import (RegistrationPanel, AddCameraCategoryPipeMenu,
 from .properties import ext_ui_properties, distribution_settings, operation_properties, color_distribution_settings
 from .pipe_editor import (DistributionTreeList, PathsUIList, ImagePath, PositionsUIList, ObjectName, TypedNodeProperty,
                           ObjectPosition, MaterialListItem, MaterialUIList, PaletteItem)
-from .labeling_panel import LabelingPanel, LabelClassesUIList, ObjectLabelsUIList, LabelRulesUIList, NamedEntitiesUIList
 from .formatting_config import LabelConfigDataProperty
+
+from .labeling import classes as labeling_classes
 
 from .handlers import sync_distribution_handler
 
@@ -25,12 +26,12 @@ def unregister_handlers():
 
 
 classes = (
-    RandomizerPanel, SettingsPanel, InfoPanel, RegistrationPanel, LabelingPanel, AddCameraCategoryPipeMenu,
+    RandomizerPanel, SettingsPanel, InfoPanel, RegistrationPanel, AddCameraCategoryPipeMenu,
     AddLightingCategoryPipeMenu, AddObjectCategoryPipeMenu, PipelineOperationsList, AddExperimentalCategoryPipeMenu,
     AddMaterialCategoryPipeMenu, AddConstraintCategoryPipeMenu, DistributionTreeList, PathsUIList,
     ImagePath, PositionsUIList, ObjectPosition, MaterialListItem, MaterialUIList, ObjectName, TypedNodeProperty,
-    LabelClassesUIList, ObjectLabelsUIList, LabelRulesUIList, NamedEntitiesUIList, LabelConfigDataProperty, PaletteItem
-)
+    LabelConfigDataProperty, PaletteItem
+) + labeling_classes
 
 # Update the main UI properties of the pipeline with settings for the configuration of each pipe's distributions
 # and properties regarding the pipeline operations

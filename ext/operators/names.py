@@ -23,9 +23,9 @@ class Labels(Enum):
 
     # ------------- Names inside core_ops.py ---------------
     # |
-    #
+    # ( Generate a batch of data )
     GENERATE                = "randomizer.generate"
-    #
+    # ( Preview a sample from the generated distribution [unseeded] )
     PREVIEW_SAMPLE          = "randomizer.preview"
 
 
@@ -82,6 +82,8 @@ class Labels(Enum):
     LOAD_PIPELINE_JSON      = "randomizer.load_pipeline"
     # ( Open the log file directory using operative system utils. A bit messy on w11 noteblock )
     OPEN_LOG_DIRECTORY      = "randomizer.open_log_file"
+    # ( Switch the labeling section [UI operation] )
+    SWITCH_LABEL_SECTION    = "randomizer.switch_label_section"
 
     # ------------- Names inside graphical_ops.py ---------------
     # |

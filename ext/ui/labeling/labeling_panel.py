@@ -1,5 +1,8 @@
-from ..constants import *
-from ..operators.names import Labels
+from .landmark_section import LandmarkSection
+
+from ...constants import *
+from ...operators.names import Labels
+
 from bpy.types import UIList, PropertyGroup, Panel
 
 class LabelClassesUIList(UIList):
@@ -126,8 +129,30 @@ class LabelingPanel(Panel):
     def draw(self, context):
 
         layout = self.layout
-        scene = context.scene
 
+        row = layout.row()
+        active = context.window_manager.get('labeling_tab', 'class_tab')
+
+        layout.label(text="Labeling mode", icon="INFO")
+        for tab_id, tab_label in [('class_tab', 'Classes'), ('landmark_tab', 'Landmarks')]:
+            row.operator(Labels.SWITCH_LABEL_SECTION.value,
+                text=tab_label,
+                depress=(tab_id == active),
+                emboss=True).tab = tab_id
+
+        layout.separator()
+        if active == 'class_tab':
+            self.draw_classes(layout, context)
+        elif active == 'landmark_tab':
+            self.draw_landmarks(layout, context)
+
+    @staticmethod
+    def draw_landmarks(layout, context):
+        LandmarkSection.draw(layout, context)
+
+    @staticmethod
+    def draw_classes(layout, context):
+        scene = context.scene
         labeling_data = scene.labeling_data
 
         box = layout.box()

@@ -24,7 +24,7 @@ Example:
 # drawing of individual pipe component editors.
 from .pipe_edit_widgets import *
 
-from ..constants import PipeNames
+from ..constants import PipeNames, StageDescriptions
 from ..distribution.computation import Distribution
 
 from abc import ABC
@@ -94,7 +94,12 @@ class RandomizeRotationOperation(ScalarPropertyDrawer):
     """
 
     """
-    pass
+
+    @staticmethod
+    def draw_editor(layout, context) -> None:
+        DescriptionWidget.draw(
+            layout, context, message=StageDescriptions.ROTATION.value)
+        ScalarPropertyDrawer.draw_editor(layout, context)
 
 @OperationDrawerRegistry.register(PipeNames.POSITION.value)
 class RandomizePositionOperation(ScalarPropertyDrawer):
@@ -286,10 +291,6 @@ class ColorEditor(PipeDrawer):
     @staticmethod
     def draw_editor(layout, context) -> None:
         pass
-
-@OperationDrawerRegistry.register(PipeNames.COLOR.value)
-class LightColorEditor(PipeDrawer):
-    pass
 
 class SimpleLightAttributeEditor(PipeDrawer):
 

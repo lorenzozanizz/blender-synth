@@ -134,6 +134,18 @@ class OpenLogsOperator(Operator):
         return { 'FINISHED' }
 
 
+class SwitchLabelingTabOperator(Operator):
+
+    bl_idname = Labels.SWITCH_LABEL_SECTION.value
+    bl_label = "Switch Labeling mode"
+
+    tab: StringProperty()                               # type: ignore
+
+    def execute(self, context):
+
+        context.window_manager['labeling_tab'] = self.tab
+        return {'FINISHED'}
+
 class ApplyLogPathOperator(Operator):
 
     bl_idname = Labels.SETUP_LOGGER_DIR.value

@@ -284,13 +284,6 @@ class RoughnessEditor(SimpleMaterialPropertySchema):
 class MetallicEditor(SimpleMaterialPropertySchema):
     pass
 
-@PipeSchemaRegistry.register(PipeNames.BASE_COLOR.value)
-class ColorEditor:
-
-    @staticmethod
-    def draw_editor(layout, context) -> None:
-        pass
-
 
 @PipeSchemaRegistry.register(PipeNames.INTENSITY.value)
 class RandomizeNodeIntensitySchema(PipeSchema):
@@ -408,29 +401,6 @@ class LightTemperatureSchema(SimpleLightAttributeSchema):
 @PipeSchemaRegistry.register(PipeNames.POWER.value)
 class LightPowerSchema(SimpleLightAttributeSchema):
     pass
-
-@PipeSchemaRegistry.register(PipeNames.COLOR.value)
-class LightColorSchema(PipeSchema):
-
-    @staticmethod
-    def extract_config_from_ui(context, operation) -> dict:
-        dic = {
-            wsk.TYPED_OBJ.value: TypedObjectTargeter.extract_data(context),
-            wsk.NODE.value: NodeDistributionSelector.extract_data(context, dim=1),
-            wsk.OFFSET.value: OffsetMode.extract_data(context)
-        }
-        return dic
-
-    @staticmethod
-    def apply_config_to_ui(context, operation, config) -> None:
-        if not config:
-            NodeDistributionSelector.reset(context)
-            TypedObjectTargeter.reset(context)
-            OffsetMode.reset(context)
-        else:
-            OffsetMode.setup_from_config(config[wsk.OFFSET.value], context)
-            NodeDistributionSelector.setup_from_config(config[wsk.NODE.value], context, dim=1)
-            TypedObjectTargeter.setup_from_config(config[wsk.TYPED_OBJ.value], context)
 
 @PipeSchemaRegistry.register(PipeNames.COLOR.value)
 class LightColorSchema(PipeSchema):

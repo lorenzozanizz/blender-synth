@@ -15,10 +15,10 @@ def panel_conflict_rename(name: str) -> str:
 
 # Names of the main panel and the category name
 MAIN_PANEL_NAME = "Generator"
-PANEL_CATEGORY  = "Gensynth"
+PANEL_CATEGORY  = "Rendersynth"
 
-REPO_URL = "https://github.com/lorenzozanizz/gensynth"
-DOCU_URL = "https://github.com/lorenzozanizz/gensynth/docs"
+REPO_URL = "https://github.com/lorenzozanizz/rendersynth"
+DOCU_URL = "https://github.com/lorenzozanizz/rendersynth/docs"
 
 VERSION        = "1.0.0"
 TARGET_VERSION = "4.5.0"
@@ -150,3 +150,10 @@ class WidgetSerializationKeys(Enum):
 
     OFFSET                      = "offset"          # ^ Parent name
     OFFSET_MODE                 = "mode"
+
+
+class StageDescriptions(Enum):
+
+    ROTATION = """ Randomly rotate an object in 3d space.
+    The rotation is applied to the Euler rotate of the target object(s). """
+
