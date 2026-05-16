@@ -21,10 +21,16 @@ nav:
   - Getting Started: setup.md
   - Architecture:
     - Overview: architecture/architecture_overview.md
-    - Distributions: architecture/distributions.md
     - Reference: architecture/reference_sheet.md
+    - Distributions: architecture/distributions.md
     - Label Generation: architecture/label_gen.md
     - Serialization: architecture/serialization.md
+    - Operators: architecture/operators.md
+    - Logging: architecture/logging.md
+    - Pipeline Execution: architecture/pipeline_execution.md
+    - Preview: architecture/preview.md
+    - User Interface: architecture/ui.md
+
     # ... more files coming
   - Tutorials:
     - Onboarding: tutorials/00_landing.md
