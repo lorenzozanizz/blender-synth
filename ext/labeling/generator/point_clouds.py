@@ -63,9 +63,12 @@ class PointCloudExtractor(Extractor):
             deps = self.ctx.evaluated_depsgraph_get()
             # Compute raw point clouds corresponding to each computed object.
             # now convert those point clouds into bound boxes.  (in-place)
-            self.visible_objects = {obj:
-                (points, get_minimal_bounding_box_fast(points)) for obj, points in visible_objects.items()
-            }
+            recomposed_clouds = {}
+            for obj, cloud_data in visible_objects.items():
+                points = [(x,y,z) for z, (x,y) in cloud_data]
+                recomposed_clouds[obj] = (points, get_minimal_bounding_box_fast(points))
+            self.visible_objects = recomposed_clouds
+
             # There are simple objects visibility, not entities.
             for obj, ( cloud_data, bbox )in self.visible_objects.items():
                 cls = classifier.map_obj(obj)
@@ -205,3 +208,8 @@ class PointCloudExtractor(Extractor):
         """
         # Assume RGBA pixels...
         return tuple(pixels[(y_p*width+x_p)*4:(y_p*width+x_p)*4+3])
+
+    def ray_casting_needs(self) -> dict:
+        return {
+            'compute_dist': True
+        }

@@ -130,7 +130,7 @@ def get_visible_objects_from_camera(scene, depsgraph,
     else: return bounding_boxes_mappings
 
 
-def get_minimal_bounding_box_fast(points: List[Tuple[int, int]]):
+def get_minimal_bounding_box_fast(points: List[Tuple]):
     """
 
     :param points:
