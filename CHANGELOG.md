@@ -1,4 +1,6 @@
-Latest Update: 
+[0.9.2] (21/05/2026)
+ - Normal map & depth map labeling formats implemented.
+
 [0.9.1] (13/05/2026)
  - Implementation of randomization stages for material, lights and cameras.
  - Implementation of color randomization for shaders. 
