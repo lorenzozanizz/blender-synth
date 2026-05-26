@@ -1,5 +1,5 @@
-from bpy.types import Operator
-from bpy.props import PointerProperty
+from bpy.types import Operator, Object
+from bpy.props import PointerProperty, EnumProperty, StringProperty
 import bpy
 
 from .names import Labels
@@ -103,26 +103,49 @@ class StopVisualizeSkeletonOperator(Operator):
         pass
 
 class AddRigOperator(Operator):
-    """Add selected material to list"""
-
+    """Add rig (Blender armature or custom) to list"""
     bl_idname = Labels.ADD_RIG.value
-    bl_label = "Add Material"
+    bl_label = "Add Rig"
 
-    # Used for modal selection of a new armature
-    armature: PointerProperty(                                              # type: ignore
-        name="Armature",
-        type=bpy.types.Object,
-        poll=lambda self, obj: obj.type == 'ARMATURE'
-    )
+    # Modal selection mode
+    mode: EnumProperty(items=[                                              # type: ignore
+        ('BLENDER', "Blender Armature", "Use existing Blender rig"),
+        ('CUSTOM', "Custom Rig", "Define non-Blender rig by name")
+    ], default='BLENDER', name="Rig Mode")
+
+    custom_rig_name: StringProperty(name="Rig Name", default="")            # type: ignore
+
+    def draw(self, context):
+        settings = context.scene.pose_label_settings
+        layout = self.layout
+        layout.prop(self, "mode")
+
+        if self.mode == 'BLENDER':
+            layout.prop(settings, "selected_armature_pointer")
+        else:
+            layout.prop(self, "custom_rig_name")
 
     def execute(self, context):
-        scene = context.scene
         settings = context.scene.pose_label_settings
+        if self.mode == 'BLENDER':
+            armature = settings.selected_armature_pointer
+            if not armature:
+                self.report({'WARNING'}, "Select a Blender armature!")
+                return {'CANCELLED'}
+            rig_name = armature.name
+            is_blender = True
+        else:
+            if not self.custom_rig_name.strip():
+                self.report({'WARNING'}, "Enter a rig name!")
+                return {'CANCELLED'}
+            rig_name = self.custom_rig_name
+            is_blender = False
 
-        selected_armature = settings.armature
-        if not selected_armature:
-            self.report({'WARNING'}, "You must selected a Blender armature object!")
-            return { 'CANCELLED' }
+        # Add to list
+        rig = settings.labeled_rigs.add()
+        rig.rig_name = rig_name
+        rig.is_blender_rig = is_blender
+        settings.selected_rig = len(settings.labeled_rigs) - 1
 
         return {'FINISHED'}
 

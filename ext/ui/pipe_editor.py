@@ -23,6 +23,7 @@ Example:
 # Import all the widgets that are used multiple times to facilitate the
 # drawing of individual pipe component editors.
 from .pipe_edit_widgets import *
+from .description import DescriptionWidget
 
 from ..constants import PipeNames, StageDescriptions
 from ..distribution.computation import Distribution

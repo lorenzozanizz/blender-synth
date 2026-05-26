@@ -1,5 +1,5 @@
 import bpy
-from bpy.types import Panel, Operator, PropertyGroup, UIList
+from bpy.types import Panel, Operator, PropertyGroup, UIList, Object
 from bpy.props import (
     StringProperty, IntProperty, BoolProperty,
     CollectionProperty, PointerProperty
@@ -38,6 +38,11 @@ class PoseLabelSettings(PropertyGroup):
     connections: CollectionProperty(type=SkeletonConnectionItem)            # type: ignore
     connections_index: IntProperty(name="Active Connection", default=0)     # type: ignore
 
+    selected_armature_pointer: PointerProperty(                             # type: ignore
+        name="Blender Armature",
+        type=Object,
+        poll=lambda self, obj: obj.type == 'ARMATURE'
+    )
 
 
 class KeypointList(UIList):
@@ -90,25 +95,26 @@ class LandmarkSection:
         # Get the current armature to print either the bone keypoint mapping or
         # general object to keypoint mapping.
 
-        # Bone → keypoint mapping
-        layout.label(text="Bone/Keypoint Mapping")
-        row = layout.row(align=True)
-        row.template_list(
-            KeypointList.__name__, "keypoint_list",
-            settings, "keypoints",
-            settings, "keypoints_index",
-            rows=5
-        )
-        row.separator()
-        col = row.column(align=True)
-        col.operator("rendersynth.add_keypoint", icon='ADD', text='')
-        col.operator("rendersynth.remove_keypoint", icon='REMOVE', text='')
-        col.separator()
+        if True:
+            # Bone → keypoint mapping
+            layout.label(text="Bone/Keypoint Mapping")
+            row = layout.row(align=True)
+            row.template_list(
+                KeypointList.__name__, "keypoint_list",
+                settings, "keypoints",
+                settings, "keypoints_index",
+                rows=5
+            )
+            row.separator()
+            col = row.column(align=True)
+            col.operator("rendersynth.add_keypoint", icon='ADD', text='')
+            col.operator("rendersynth.remove_keypoint", icon='REMOVE', text='')
+            col.separator()
 
+        # Even if the skeleton is not a blender rig, the user may want to specify bone
+        # connections.
         layout.separator()
-
         layout.label(text="Skeleton Connections")
-
         row = layout.row(align=True)
         # Skeleton connections
         row.template_list(

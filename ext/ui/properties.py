@@ -12,6 +12,7 @@ import os
 from bpy.props import (
     StringProperty, IntProperty, BoolProperty, EnumProperty, FloatProperty, FloatVectorProperty, CollectionProperty, PointerProperty
 )
+from bpy.types import Object
 
 from .formatting_config import LabelConfigDataProperty
 from .labeling import PoseLabelSettings
