@@ -1,4 +1,5 @@
 from bpy.types import Operator
+from bpy.props import PointerProperty
 import bpy
 
 from .names import Labels
@@ -123,8 +124,6 @@ class AddRigOperator(Operator):
             self.report({'WARNING'}, "You must selected a Blender armature object!")
             return { 'CANCELLED' }
 
-
-
         return {'FINISHED'}
 
     def invoke(self, context, _event):
@@ -133,6 +132,7 @@ class AddRigOperator(Operator):
 
 class RemoveRigOperator(Operator):
     bl_idname = Labels.REMOVE_RIG.value
+    bl_label = "Remove Rig"
 
     def execute(self, context):
         settings = context.scene.pose_label_settings

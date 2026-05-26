@@ -7,6 +7,6 @@ classes = (
     LabelingPanel, LabelClassesUIList, ObjectLabelsUIList, LabelRulesUIList, NamedEntitiesUIList,
 
     # Landmarks (rigs, faces)
-    KeypointItem, SkeletonConnectionItem, PoseLabelSettings, KeypointList,
-    ConnectionList, RigItem, RegisteredSkeletonsList
+    RigItem, KeypointItem, SkeletonConnectionItem, PoseLabelSettings, KeypointList,
+    ConnectionList, RegisteredSkeletonsList
 )

@@ -20,7 +20,7 @@ class SkeletonConnectionItem(PropertyGroup):
 
 class RigItem(PropertyGroup):
 
-    rig_name: StringProperty(name="")                                       # type: ignore
+    rig_name: StringProperty(name="Rig Name")                               # type: ignore
     enabled: BoolProperty(name="Enabled", default=True)                     # type: ignore
     identity: IntProperty(name="Identity", default=0)                       # type: ignore
     is_blender_rig: BoolProperty(name="Blender Rig", default=False)         # type: ignore
@@ -65,12 +65,11 @@ class LandmarkSection:
     def draw(layout, context):
         settings = context.scene.pose_label_settings
 
-        row = layout.row(align=True)
         # Armature selector
         # Add armatures, the add button is modal and allows to select the armature
         # separately.
-
         layout.label(text="Registered Armatures", icon='ARMATURE_DATA')
+        row = layout.row(align=True)
         row.template_list(
             RegisteredSkeletonsList.__name__, "rig_list",
             settings, "labeled_rigs",
@@ -81,13 +80,15 @@ class LandmarkSection:
         col = row.column(align=True)
         col.operator(Labels.ADD_RIG.value, icon='ADD', text='')
         col.operator(Labels.REMOVE_RIG.value, icon='REMOVE', text='')
-
-        col.operator(Labels.DETECT_BONES.value, icon='BONE_DATA', text='')
         col.separator()
+        col.operator(Labels.DETECT_BONES.value, icon='BONE_DATA', text='')
 
         row = layout.row(align=True)
         row.prop(settings, "armature", text="")
         layout.separator()
+
+        # Get the current armature to print either the bone keypoint mapping or
+        # general object to keypoint mapping.
 
         # Bone → keypoint mapping
         layout.label(text="Bone/Keypoint Mapping")
