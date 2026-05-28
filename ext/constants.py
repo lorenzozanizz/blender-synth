@@ -62,6 +62,11 @@ class PipeNames(Enum):
     POWER       = "Power"
     COLOR       = "Color"
 
+    # Rigs
+    ROTATE_BONE = "Rotate Bone"
+    PICK_POSE   = "Pick Pose"
+
+
     # Camera
     BEZIER_LOCK = "Bezier Lock"
     SPHERE_LOCK = "Sphere Lock"

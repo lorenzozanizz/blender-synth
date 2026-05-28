@@ -10,15 +10,15 @@ from ...operators.names import Labels
 class KeypointItem(PropertyGroup):
 
     bone_name: StringProperty(name="Bone")                                  # type: ignore
+
     label: StringProperty(name="Label")                                     # type: ignore
     index: IntProperty(name="Index", min=0)                                 # type: ignore
     enabled: BoolProperty(name="Include", default=True)                     # type: ignore
     tail_or_head: BoolProperty(name="Include", default=True)                # type: ignore
 
-class BoneMappedObject(PropertyGroup):
-    label: StringProperty(name="Label")  # type: ignore
-    index: IntProperty(name="Index", min=0)  # type: ignore
-    enabled: BoolProperty(name="Include", default=True)  # type: ignore
+    # Conditionally active if this is a mapped (virtual)
+    b_obj: PointerProperty(name="Mapped Object", type=Object)               # type: ignore
+
 
 class SkeletonConnectionItem(PropertyGroup):
     index_a: IntProperty(name="From", min=0)                                # type: ignore
@@ -29,8 +29,16 @@ class RigItem(PropertyGroup):
     rig_name: StringProperty(name="Rig Name")                               # type: ignore
     enabled: BoolProperty(name="Enabled", default=True)                     # type: ignore
     identity: IntProperty(name="Identity", default=0)                       # type: ignore
+
+    # A rig may be really existing in blender, or it may be a virtual rig for
+    # which the user must specify which blender objects have to be
+    # mapped to bones
     is_blender_rig: BoolProperty(name="Blender Rig", default=False)         # type: ignore
 
+    # Skeleton connections: which bones are connected to which
+    bone_connections: CollectionProperty(type=SkeletonConnectionItem)       # type: ignore
+
+    # Actual bone/map data: Either real bones, or fake bones.
 
 class PoseLabelSettings(PropertyGroup):
 
@@ -50,9 +58,12 @@ class PoseLabelSettings(PropertyGroup):
         poll=lambda self, obj: obj.type == 'ARMATURE'
     )
 
-
 class KeypointList(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+
+        # Use the current context to view if the current rig is a real
+        # rig or a virtual rig.
+
         row = layout.row(align=True)
         row.prop(item, "include", text="")
         row.prop(item, "bone_name", text="", emboss=False)
@@ -107,22 +118,20 @@ class LandmarkSection:
             # If no rig is available, just return
             return
 
-        if selected_rig.is_blender_rig:
-
-            # Bone → keypoint mapping
-            layout.label(text="Bone/Keypoint Mapping")
-            row = layout.row(align=True)
-            row.template_list(
-                KeypointList.__name__, "keypoint_list",
-                settings, "keypoints",
-                settings, "keypoints_index",
-                rows=5
-            )
-            row.separator()
-            col = row.column(align=True)
-            col.operator("rendersynth.add_keypoint", icon='ADD', text='')
-            col.operator("rendersynth.remove_keypoint", icon='REMOVE', text='')
-            col.separator()
+        # Bone → keypoint mapping
+        layout.label(text="Bone/Keypoint Mapping")
+        row = layout.row(align=True)
+        row.template_list(
+            KeypointList.__name__, "keypoint_list",
+            settings, "keypoints",
+            settings, "keypoints_index",
+            rows=5
+        )
+        row.separator()
+        col = row.column(align=True)
+        col.operator("rendersynth.add_keypoint", icon='ADD', text='')
+        col.operator("rendersynth.remove_keypoint", icon='REMOVE', text='')
+        col.separator()
 
         # Even if the skeleton is not a blender rig, the user may want to specify bone
         # connections.

@@ -168,3 +168,10 @@ class RemoveRigOperator(Operator):
 
         self.report({'WARNING'}, "No rig selected")
         return {'CANCELLED'}
+
+class SanitizeBoneMappingOperator(Operator):
+    bl_idname = Labels.SANITIZE_BONE_MAPPING.value
+    bl_label = "Sanitize Bone Mapping Rig"
+
+    def execute(self, context):
+        return {'CANCELLED'}
