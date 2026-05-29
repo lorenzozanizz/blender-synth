@@ -9,16 +9,21 @@ from ...operators.names import Labels
 
 class KeypointItem(PropertyGroup):
 
-    bone_name: StringProperty(name="Bone")                                  # type: ignore
-
     label: StringProperty(name="Label")                                     # type: ignore
     index: IntProperty(name="Index", min=0)                                 # type: ignore
     enabled: BoolProperty(name="Include", default=True)                     # type: ignore
-    tail_or_head: BoolProperty(name="Include", default=True)                # type: ignore
 
     # Conditionally active if this is a mapped (virtual)
-    b_obj: PointerProperty(name="Mapped Object", type=Object)               # type: ignore
+    real_obj: PointerProperty(name="Mapped Object", type=Object)            # type: ignore
+    bone_name: StringProperty(name="Bone")                                  # type: ignore
 
+    # Conditionally active if this is a real bone
+    tail_or_head: BoolProperty(name="Include", default=True)                # type: ignore
+    bone_obj: PointerProperty(                                              # type: ignore
+        name="Mapped Bone",
+        type=Object,
+        poll=lambda self, obj: obj.type == 'BONE'
+    )
 
 class SkeletonConnectionItem(PropertyGroup):
     index_a: IntProperty(name="From", min=0)                                # type: ignore
@@ -36,21 +41,19 @@ class RigItem(PropertyGroup):
     is_blender_rig: BoolProperty(name="Blender Rig", default=False)         # type: ignore
 
     # Skeleton connections: which bones are connected to which
-    bone_connections: CollectionProperty(type=SkeletonConnectionItem)       # type: ignore
+    connections: CollectionProperty(type=SkeletonConnectionItem)            # type: ignore
+    connections_index: IntProperty(name="Active Connection", default=0)     # type: ignore
 
     # Actual bone/map data: Either real bones, or fake bones.
+    keypoints: CollectionProperty(type=KeypointItem)                        # type: ignore
+    keypoints_index: IntProperty(name="Active Keypoint", default=0)         # type: ignore
+
 
 class PoseLabelSettings(PropertyGroup):
 
     # There can be multiple armatures.
     labeled_rigs: CollectionProperty(type=RigItem)                          # type: ignore
     selected_rig: IntProperty(name="Selected", default=0)                   # type: ignore
-
-    keypoints: CollectionProperty(type=KeypointItem)                        # type: ignore
-    keypoints_index: IntProperty(name="Active Keypoint", default=0)         # type: ignore
-
-    connections: CollectionProperty(type=SkeletonConnectionItem)            # type: ignore
-    connections_index: IntProperty(name="Active Connection", default=0)     # type: ignore
 
     selected_armature_pointer: PointerProperty(                             # type: ignore
         name="Blender Armature",
@@ -77,8 +80,37 @@ class ConnectionList(UIList):
         row.label(text=f"[{item.index_a}, {item.index_b}]")
 
 class RegisteredSkeletonsList(UIList):
+
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+        settings = context.scene.pose_label_settings
+        rigs = settings.labeled_rigs
+        rig_index = settings.selected_rig
+        selected_rig = None if rig_index < 0 or rig_index >= len(rigs) else rigs[rig_index]
+        if selected_rig is None:
+            # If no rig is available, just return
+            return
+        # Bone name, enabled, identity, etc... are shared between real bones and mappings.
         row = layout.row(align=True)
+
+
+        if selected_rig.is_blender_rig:
+            row.prop(item, 'b_obj', text='')
+        else:
+            row.prop(item, 'tail_or_head', text='')
+"""    bone_name: StringProperty(name="Bone")                                  # type: ignore
+
+    label: StringProperty(name="Label")                                     # type: ignore
+    index: IntProperty(name="Index", min=0)                                 # type: ignore
+    enabled: BoolProperty(name="Include", default=True)                     # type: ignore
+    tail_or_head: BoolProperty(name="Include", default=True)                # type: ignore
+
+    # Conditionally active if this is a mapped (virtual)
+    b_obj: PointerProperty(name="Mapped Object", type=Object)               # type: ignore
+"""
+
+
+
+
 
 
 class LandmarkSection:
@@ -92,6 +124,7 @@ class LandmarkSection:
         # separately.
         layout.label(text="Registered Armatures", icon='ARMATURE_DATA')
         row = layout.row(align=True)
+
         row.template_list(
             RegisteredSkeletonsList.__name__, "rig_list",
             settings, "labeled_rigs",
@@ -105,9 +138,6 @@ class LandmarkSection:
         col.separator()
         col.operator(Labels.DETECT_BONES.value, icon='BONE_DATA', text='')
 
-        row = layout.row(align=True)
-        row.prop(settings, "armature", text="")
-        layout.separator()
 
         # Get the current armature to print either the bone keypoint mapping or
         # general object to keypoint mapping.
@@ -123,14 +153,14 @@ class LandmarkSection:
         row = layout.row(align=True)
         row.template_list(
             KeypointList.__name__, "keypoint_list",
-            settings, "keypoints",
-            settings, "keypoints_index",
+            selected_rig, "keypoints",
+            selected_rig, "keypoints_index",
             rows=5
         )
         row.separator()
         col = row.column(align=True)
-        col.operator("rendersynth.add_keypoint", icon='ADD', text='')
-        col.operator("rendersynth.remove_keypoint", icon='REMOVE', text='')
+        col.operator(Labels.ADD_KEYPOINT.value, icon='ADD', text='')
+        col.operator(Labels.REMOVE_KEYPOINT.value, icon='REMOVE', text='')
         col.separator()
 
         # Even if the skeleton is not a blender rig, the user may want to specify bone
@@ -141,19 +171,13 @@ class LandmarkSection:
         # Skeleton connections
         row.template_list(
             ConnectionList.__name__, "connection_list",
-            settings, "connections",
-            settings, "connections_index",
+            selected_rig, "connections",
+            selected_rig, "connections_index",
             rows=3
         )
         row.separator()
         col = row.column(align=True)
-        col.operator("rendersynth.add_connection", icon='ADD', text='')
-        col.operator("rendersynth.remove_connection", icon='REMOVE', text='')
+        col.operator(Labels.ADD_CONNECTION.value, icon='ADD', text='')
+        col.operator(Labels.REMOVE_CONNECTION.value, icon='REMOVE', text='')
         col.separator()
 
-        # Edit the active connection inline
-        if settings.connections and settings.connections_index < len(settings.connections):
-            active_conn = settings.connections[settings.connections_index]
-            row = layout.row(align=True)
-            row.prop(active_conn, "index_a", text="From")
-            row.prop(active_conn, "index_b", text="To")

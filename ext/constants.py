@@ -66,7 +66,6 @@ class PipeNames(Enum):
     ROTATE_BONE = "Rotate Bone"
     PICK_POSE   = "Pick Pose"
 
-
     # Camera
     BEZIER_LOCK = "Bezier Lock"
     SPHERE_LOCK = "Sphere Lock"
